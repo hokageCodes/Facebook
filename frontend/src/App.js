@@ -11,6 +11,7 @@ import CreatePostPopup from "./components/createPostPopup";
 import { useEffect, useReducer, useState } from "react";
 import axios from "axios";
 function reducer(state, action) {
+  
   switch (action.type) {
     case "POSTS_REQUEST":
       return { ...state, loading: true, error: "" };
@@ -31,7 +32,7 @@ function reducer(state, action) {
 function App() {
   const [visible, setVisible] = useState(false);
   const { user } = useSelector((state) => ({ ...state }));
-  const [{ loading, error, posts }, dispatch] = useReducer(reducer, {
+  const [{ posts }, dispatch] = useReducer(reducer, {
     loading: false,
     posts: [],
     error: "",
@@ -47,14 +48,13 @@ function App() {
         type: "POSTS_REQUEST",
       });
       const { data } = await axios.get(
-        console.log(data)
         `${process.env.REACT_APP_BACKEND_URL}/getAllposts`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
         }
-      );
+        );
       dispatch({
         type: "POSTS_SUCCESS",
         payload: data,
