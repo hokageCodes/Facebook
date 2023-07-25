@@ -4,14 +4,14 @@ const {
   validateUsername,
 } = require("../helpers/validation");
 const User = require("../models/User");
+const Post = require("../models/Post");
 const Code = require("../models/Code");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const cloudinary = require("cloudinary");
 const { generateToken } = require("../helpers/tokens");
 const { sendVerificationEmail, sendResetCode } = require("../helpers/mailer");
 const generateCode = require("../helpers/generateCode");
-
-
 exports.register = async (req, res) => {
   try {
     const {
@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
       last_name,
       email,
       password,
-      // username,
+      username,
       bYear,
       bMonth,
       bDay,
@@ -91,7 +91,6 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 exports.activateAccount = async (req, res) => {
   try {
     const validUser = req.user.id;
@@ -234,4 +233,64 @@ exports.changePassword = async (req, res) => {
     }
   );
   return res.status(200).json({ message: "ok" });
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const profile = await User.findOne({ username }).select("-password");
+    if (!profile) {
+      return res.json({ ok: false });
+    }
+    const posts = await Post.find({ user: profile._id })
+      .populate("user")
+      .sort({ createdAt: -1 });
+    res.json({ ...profile.toObject(), posts });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateProfilePicture = async (req, res) => {
+  try {
+    const { url } = req.body;
+
+    await User.findByIdAndUpdate(req.user.id, {
+      picture: url,
+    });
+    res.json(url);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateCover = async (req, res) => {
+  try {
+    const { url } = req.body;
+
+    await User.findByIdAndUpdate(req.user.id, {
+      cover: url,
+    });
+    res.json(url);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateDetails = async (req, res) => {
+  try {
+    const { infos } = req.body;
+    const updated = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        details: infos,
+      },
+      {
+        new: true,
+      }
+    );
+    res.json(updated.details);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

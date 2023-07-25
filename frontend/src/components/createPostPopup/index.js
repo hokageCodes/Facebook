@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import PostError from "./PostError";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
 import { uploadImages } from "../../functions/uploadImages";
+
 export default function CreatePostPopup({ user, setVisible }) {
   const dispatch = useDispatch();
   const popup = useRef(null);
@@ -147,6 +148,7 @@ export default function CreatePostPopup({ user, setVisible }) {
         )}
         <AddToYourPost setShowPrev={setShowPrev} />
         <button
+          type="submit"
           className="post_submit"
           onClick={() => {
             postSubmit();
