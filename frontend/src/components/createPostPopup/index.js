@@ -11,7 +11,6 @@ import { useDispatch } from "react-redux";
 import PostError from "./PostError";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
 import { uploadImages } from "../../functions/uploadImages";
-
 export default function CreatePostPopup({ user, setVisible }) {
   const dispatch = useDispatch();
   const popup = useRef(null);
@@ -48,7 +47,7 @@ export default function CreatePostPopup({ user, setVisible }) {
       const postImages = images.map((img) => {
         return dataURItoBlob(img);
       });
-      const path = `${user.username}/post Images`;
+      const path = `${user.username}/post_images`;
       let formData = new FormData();
       formData.append("path", path);
       postImages.forEach((image) => {
@@ -148,7 +147,6 @@ export default function CreatePostPopup({ user, setVisible }) {
         )}
         <AddToYourPost setShowPrev={setShowPrev} />
         <button
-          type="submit"
           className="post_submit"
           onClick={() => {
             postSubmit();
